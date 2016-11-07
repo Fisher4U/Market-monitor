@@ -6,23 +6,23 @@
 		<artifactId>market-monitor</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>market-agent</artifactId>
+	<artifactId>market-network</artifactId>
 
 	<dependencies>
 		<dependency>
+			<groupId>com.qinyadan.market</groupId>
+			<artifactId>market-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.24.Final</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${lang3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.fusesource</groupId>
-			<artifactId>sigar</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qinyadan.market</groupId>
-			<artifactId>market-network</artifactId>
-			<version>${project.version}</version>
+			<version>3.4</version>
 		</dependency>
 	</dependencies>
 </project>

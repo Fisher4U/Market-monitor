@@ -7,7 +7,12 @@
   </parent>
   <artifactId>market-monitor</artifactId>
   <packaging>pom</packaging>
+  
   <modules>
   	<module>market-agent</module>
+  	<module>market-network</module>
+  	<module>market-core</module>
   </modules>
+  
+  
 </project>
