@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qinyadan.brick.monitor.config.ClientConfigManager;
 import com.qinyadan.brick.monitor.network.codec.MessageCodec;
+import com.qinyadan.brick.monitor.network.codec.NativeMessageCodec;
 import com.qinyadan.brick.monitor.spi.message.Message;
 import com.qinyadan.brick.monitor.spi.message.Transaction;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageQueue;
@@ -44,7 +45,7 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 
 	private MessageQueue atomicTrees = new DefaultMessageQueue(SIZE);
 
-	private List<InetSocketAddress> m_serverAddresses;
+	private List<InetSocketAddress> serverAddresses;
 
 	private ChannelManager manager;
 
@@ -56,14 +57,15 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 
 	private static final int MAX_CHILD_NUMBER = 200;
 
-	private final ExecutorService sendExecutor;
+	private ExecutorService sendExecutor;
 
-	private final ExecutorService manageExecutor;
+	private ExecutorService manageExecutor;
 
-	private final ExecutorService mergeExecutor;
+	private ExecutorService mergeExecutor;
 
-	public TcpSocketSender() {
-		manager = new ChannelManager(m_serverAddresses, queue, configManager);
+	@Override
+	public void initialize() {
+		manager = new ChannelManager(serverAddresses, queue, configManager);
 
 		this.sendExecutor = Executors.newFixedThreadPool(2, new ThreadFactory() {
 			private AtomicInteger threadIndex = new AtomicInteger(0);
@@ -90,12 +92,10 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 				return new Thread(r, "TCPmergeExecutor_" + this.threadIndex.incrementAndGet());
 			}
 		});
+		codec = new NativeMessageCodec();
 		sendExecutor.execute(this);
-
 		manageExecutor.execute(manager);
-
 		mergeExecutor.execute(new MergeAtomicTask());
-
 	}
 
 	private boolean checkWritable(ChannelFuture future) {
@@ -149,7 +149,7 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 
 	private MessageTree mergeTree(MessageQueue trees) {
 		int max = MAX_CHILD_NUMBER;
-		DefaultTransaction tran = new DefaultTransaction("_CatMergeTree", "_CatMergeTree", null);
+		DefaultTransaction tran = new DefaultTransaction("_MarketMergeTree", "_MarketMergeTree", null);
 		MessageTree first = trees.poll();
 
 		tran.setStatus(Transaction.SUCCESS);
@@ -248,7 +248,7 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 	}
 
 	public void setServerAddresses(List<InetSocketAddress> serverAddresses) {
-		m_serverAddresses = serverAddresses;
+		this.serverAddresses = serverAddresses;
 	}
 
 	private boolean shouldMerge(MessageQueue trees) {
@@ -303,11 +303,6 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 	@Override
 	public String getServiceName() {
 		return "TcpSocketSender";
-	}
-
-	@Override
-	public void initialize() {
-		
 	}
 
 }

@@ -27,7 +27,7 @@ public class DefaultTransportManager implements TransportManager {
 		List<Server> servers = configManager.getServers();
 		if (!configManager.isCatEnabled()) {
 			tcpSocketSender = null;
-			logger.warn("CAT was DISABLED due to not initialized yet!");
+			logger.warn("Market monitor was DISABLED due to not initialized yet!");
 		} else {
 			List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 
@@ -37,7 +37,7 @@ public class DefaultTransportManager implements TransportManager {
 				}
 			}
 
-			logger.info("Remote CAT servers: " + addresses);
+			logger.info("Remote Market monitor servers: " + addresses);
 
 			if (addresses.isEmpty()) {
 				throw new RuntimeException("All servers in configuration are disabled!\r\n" + servers);
