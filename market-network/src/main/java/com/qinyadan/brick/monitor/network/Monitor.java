@@ -1,12 +1,16 @@
-package com.qinyadan.brick.monitor;
+package com.qinyadan.brick.monitor.network;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import com.qinyadan.brick.monitor.CatConstants;
+import com.qinyadan.brick.monitor.config.ClientConfigManager;
 import com.qinyadan.brick.monitor.domain.ClientConfig;
+import com.qinyadan.brick.monitor.domain.Domain;
 import com.qinyadan.brick.monitor.domain.Server;
 import com.qinyadan.brick.monitor.spi.message.Event;
 import com.qinyadan.brick.monitor.spi.message.Heartbeat;
@@ -25,20 +29,21 @@ import com.qinyadan.brick.monitor.spi.message.internal.MessageManager;
  */
 public class Monitor {
 	
-	private static Monitor s_instance = new Monitor();
+	private static Monitor instance = new Monitor();
 
-	private static volatile boolean s_init = false;
+	private static volatile boolean init = false;
 
-	private MessageFactory m_producer;
+	private final MessageFactory producer;
 
-	private MessageManager m_manager;
+	private final MessageManager manager;
 
 	private static void checkAndInitialize() {
-		if (!s_init) {
-			synchronized (s_instance) {
-				if (!s_init) {
-					log("WARN", "Cat is lazy initialized!");
-					s_init = true;
+		if (!init) {
+			synchronized (instance) {
+				if (!init) {
+					initialize("127.0.0.1:8889");
+					log("WARN", "Monitor is lazy initialized!");
+					init = true;
 				}
 			}
 		}
@@ -49,7 +54,7 @@ public class Monitor {
 	}
 
 	public static void destroy() {
-		s_instance = new Monitor();
+		instance = new Monitor();
 	}
 
 	public static String getCurrentMessageId() {
@@ -69,35 +74,33 @@ public class Monitor {
 	}
 
 	public static Monitor getInstance() {
-		return s_instance;
+		return instance;
 	}
 
 	public static MessageManager getManager() {
 		checkAndInitialize();
-
-		return s_instance.m_manager;
+		return instance.manager;
 	}
 
 	public static MessageFactory getProducer() {
 		checkAndInitialize();
-		return s_instance.m_producer;
+		return instance.producer;
 	}
 
 	public static void initialize(String... servers) {
 		try {
-			File configFile = File.createTempFile("cat-client", ".xml");
 			ClientConfig config = new ClientConfig().setMode("client");
 			for (String server : servers) {
 				config.addServer(new Server(server));
 			}
-
-		} catch (IOException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static boolean isInitialized() {
-		return s_init;
+		return init;
 	}
 
 	static void log(String severity, String message) {
@@ -275,19 +278,82 @@ public class Monitor {
 	}
 
 	private Monitor() {
+		ClientConfigManager config = new DefaultClientConfigManager();
+		this.manager = new DefaultMessageManager(config);
+		this.producer = new DefaultMessageProducer(manager);
 	}
-
+	
 	public static interface Context {
 
-		public final String ROOT = "_catRootMessageId";
+		public final String ROOT = "_MonitorRootMessageId";
 
-		public final String PARENT = "_catParentMessageId";
+		public final String PARENT = "_MonitorParentMessageId";
 
-		public final String CHILD = "_catChildMessageId";
+		public final String CHILD = "_MonitorChildMessageId";
 
 		public void addProperty(String key, String value);
 
 		public String getProperty(String key);
+	}
+	
+	private class DefaultClientConfigManager implements ClientConfigManager{
+
+		@Override
+		public Domain getDomain() {
+			Domain domain = new Domain();
+			domain.setEnabled(true);
+			domain.setId("test");
+			domain.setIp("127.0.0.1");
+			return domain;
+		}
+
+		@Override
+		public int getMaxMessageLength() {
+			return 0;
+		}
+
+		@Override
+		public long getServerAddressRefreshInterval() {
+			return 0;
+		}
+
+		@Override
+		public String getServerConfigUrl() {
+			return null;
+		}
+
+		@Override
+		public List<Server> getServers() {
+			List<Server> servers = new ArrayList<Server>();
+			Server server = new Server();
+			server.setIp("127.0.0.1");
+			server.setPort(8889);
+			server.setEnabled(true);
+			server.setHttpPort("8080");
+			servers.add(server);
+			return servers;
+		}
+
+		@Override
+		public int getTaggedTransactionCacheSize() {
+			return 0;
+		}
+
+		@Override
+		public void initialize(File configFile) throws Exception {
+			
+		}
+
+		@Override
+		public boolean isCatEnabled() {
+			return true;
+		}
+
+		@Override
+		public boolean isDumpLocked() {
+			return false;
+		}
+		
 	}
 
 }

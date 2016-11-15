@@ -1,6 +1,6 @@
 package com.qinyadan.brick.monitor.spi.message.ext.support;
 
-import com.qinyadan.brick.monitor.Monitor;
+
 import com.qinyadan.brick.monitor.spi.message.ext.ForkedTransaction;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageTree;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultTransaction;
@@ -27,7 +27,7 @@ public class DefaultForkedTransaction extends DefaultTransaction implements Fork
 
 			// Detach parent transaction and this forked transaction, by calling linkAsRunAway(), at this earliest moment,
 			// so that thread synchronization is not needed at all between them in the future.
-			m_forkedMessageId = Monitor.createMessageId();
+			//m_forkedMessageId = Monitor.createMessageId();
 		}
 	}
 

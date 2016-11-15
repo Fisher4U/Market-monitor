@@ -10,7 +10,9 @@ public class DefaultDecodeHandlerManager implements DecodeHandlerManager {
 	private Map<String, DecodeHandler> cached = new HashMap<String, DecodeHandler>();
 	
 	public DefaultDecodeHandlerManager(){
-		Map<String, DecodeHandler> map = null ; //lookupMap(DecodeHandler.class);
+		Map<String, DecodeHandler> map = new HashMap<String, DecodeHandler>() ;
+		map.put("NC1", new NativeCommandCodec());
+		map.put("NT1", new NativeMessageCodec());
 		cached.putAll(map);
 	}
 
@@ -21,5 +23,5 @@ public class DefaultDecodeHandlerManager implements DecodeHandlerManager {
 		String hint = new String(data);
 		return cached.get(hint);
 	}
-
+	
 }

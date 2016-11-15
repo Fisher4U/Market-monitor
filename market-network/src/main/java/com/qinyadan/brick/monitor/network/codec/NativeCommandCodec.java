@@ -3,13 +3,18 @@ package com.qinyadan.brick.monitor.network.codec;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.qinyadan.brick.monitor.network.command.Command;
 import com.qinyadan.brick.monitor.network.command.DefaultCommand;
 
 import io.netty.buffer.ByteBuf;
 
 public class NativeCommandCodec implements CommandCodec {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(NativeCommandCodec.class);
+			
 	public static final String ID = "NC1";
 
 	@Override
@@ -162,6 +167,16 @@ public class NativeCommandCodec implements CommandCodec {
 
 		public void writeVersion(String version) {
 			m_buf.writeBytes(version.getBytes());
+		}
+	}
+
+	@Override
+	public void handle(ByteBuf buf) {
+		Command cmd = null;
+		try {
+			cmd = decode(buf);
+		} catch (Exception e) {
+			logger.error("Error when handling command " + cmd + "!", e);
 		}
 	}
 }

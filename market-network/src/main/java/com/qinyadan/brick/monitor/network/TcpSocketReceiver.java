@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.qinyadan.brick.monitor.config.ServerTransportConfiguration;
 import com.qinyadan.brick.monitor.network.codec.DecodeHandler;
 import com.qinyadan.brick.monitor.network.codec.DecodeHandlerManager;
+import com.qinyadan.brick.monitor.network.codec.DefaultDecodeHandlerManager;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -47,6 +48,8 @@ public final class TcpSocketReceiver {
 		bossGroup = linux ? new EpollEventLoopGroup(bossThreads) : new NioEventLoopGroup(bossThreads);
 		workerGroup = linux ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
 		channelClass = linux ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
+		
+		manager = new DefaultDecodeHandlerManager();
 	}
 
 	public synchronized void init() throws Exception {
@@ -116,6 +119,7 @@ public final class TcpSocketReceiver {
 			buffer.readInt(); // get rid of length
 
 			ByteBuf buf = buffer.readSlice(length);
+			
 			DecodeHandler handler = manager.getHandler(buf);
 
 			if (handler != null) {

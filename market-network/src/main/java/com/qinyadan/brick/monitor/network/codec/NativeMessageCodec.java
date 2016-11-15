@@ -4,6 +4,9 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Stack;
 
+import com.qinyadan.brick.monitor.CatConstants;
+import com.qinyadan.brick.monitor.network.MessageConsumer;
+import com.qinyadan.brick.monitor.network.RealtimeConsumer;
 import com.qinyadan.brick.monitor.spi.message.Event;
 import com.qinyadan.brick.monitor.spi.message.Heartbeat;
 import com.qinyadan.brick.monitor.spi.message.Message;
@@ -17,21 +20,29 @@ import com.qinyadan.brick.monitor.spi.message.internal.DefaultHeartbeat;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultMetric;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultTrace;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultTransaction;
+import com.qinyadan.brick.monitor.statistic.ServerStatisticManager;
 
 import io.netty.buffer.ByteBuf;
 
 public class NativeMessageCodec implements MessageCodec {
 
-	public static final String ID = "NT1"; // native message tree version 1
-
+	public static final String ID = "NT1";
+	
+	private MessageConsumer consumer = new RealtimeConsumer();
+	
+	//private MessageDispatcher dispatcher;
+	
+	private ServerStatisticManager serverStateManager;
+	
+	private volatile long processCount;
+	
 	@Override
 	public void decode(ByteBuf buf, MessageTree tree) {
+		
 		Context ctx = new Context(tree);
-
 		Codec.HEADER.decode(ctx, buf);
 
 		Message msg = decodeMessage(ctx, buf);
-
 		tree.setMessage(msg);
 	}
 
@@ -465,5 +476,26 @@ public class NativeMessageCodec implements MessageCodec {
 		public void writeVersion(ByteBuf buf, String version) {
 			buf.writeBytes(version.getBytes());
 		}
+	}
+
+	@Override
+	public void handle(ByteBuf buf) {
+		DefaultMessageTree tree = new DefaultMessageTree();
+		buf.markReaderIndex();
+		decode(buf,tree);
+		buf.resetReaderIndex();
+		
+		tree.setBuffer(buf);
+		
+		consumer.consume(tree);
+        //dispatcher.dispatch(tree);
+
+        processCount++;
+
+        long flag = processCount % CatConstants.SUCCESS_COUNT;
+
+        if (flag == 0) {
+           serverStateManager.addMessageTotal(CatConstants.SUCCESS_COUNT);
+        }
 	}
 }

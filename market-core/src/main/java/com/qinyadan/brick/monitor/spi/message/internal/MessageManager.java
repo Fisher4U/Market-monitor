@@ -98,5 +98,5 @@ public interface MessageManager {
 	 * 
 	 */
 	public String getDomain();
-
+	
 }

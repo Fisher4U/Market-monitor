@@ -3,7 +3,6 @@ package com.qinyadan.brick.monitor.network;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.qinyadan.brick.monitor.Monitor;
 import com.qinyadan.brick.monitor.spi.message.Event;
 import com.qinyadan.brick.monitor.spi.message.Heartbeat;
 import com.qinyadan.brick.monitor.spi.message.Message;
@@ -29,7 +28,11 @@ public class DefaultMessageProducer implements MessageFactory {
 
 	private MessageManager manager;
 
-	private MessageIdFactory factory;
+	private MessageIdFactory factory = new MessageIdFactory();
+	
+	public DefaultMessageProducer(MessageManager manager){
+		this.manager = manager;
+	}
 
 	@Override
 	public String createMessageId() {
@@ -142,7 +145,7 @@ public class DefaultMessageProducer implements MessageFactory {
 
 		if (manager.isMessageEnabled()) {
 			DefaultEvent event = new DefaultEvent(type, name, manager);
-
+			
 			return event;
 		} else {
 			return NullMessage.EVENT;
@@ -195,11 +198,10 @@ public class DefaultMessageProducer implements MessageFactory {
 		if (!manager.hasContext()) {
 			manager.setup();
 		}
-
 		if (manager.isMessageEnabled()) {
 			DefaultHeartbeat heartbeat = new DefaultHeartbeat(type, name, manager);
-
 			manager.getThreadLocalMessageTree().setSample(false);
+			
 			return heartbeat;
 		} else {
 			return NullMessage.HEARTBEAT;
@@ -300,4 +302,5 @@ public class DefaultMessageProducer implements MessageFactory {
 			return true;
 		}
 	}
+
 }

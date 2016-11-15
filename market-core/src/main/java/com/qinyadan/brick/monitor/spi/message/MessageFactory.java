@@ -181,4 +181,5 @@ public interface MessageFactory {
 	 * @return tagged transaction
 	 */
 	public TaggedTransaction newTaggedTransaction(String type, String name, String tag);
+	
 }

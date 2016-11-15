@@ -5,120 +5,120 @@ import com.qinyadan.brick.monitor.spi.message.Message;
 
 public abstract class AbstractMessage implements Message {
 	
-	private String m_type;
+	private String type;
 
-	private String m_name;
+	private String name;
 
-	private String m_status = "unset";
+	private String status = "unset";
 
-	private long m_timestampInMillis;
+	private long timestampInMillis;
 
-	private CharSequence m_data;
+	private CharSequence data;
 
-	private boolean m_completed;
+	private boolean completed;
 
 	public AbstractMessage(String type, String name) {
-		m_type = String.valueOf(type);
-		m_name = String.valueOf(name);
-		m_timestampInMillis = MilliSecondTimer.currentTimeMillis();
+		type = String.valueOf(type);
+		name = String.valueOf(name);
+		timestampInMillis = MilliSecondTimer.currentTimeMillis();
 	}
 
 	@Override
 	public void addData(String keyValuePairs) {
-		if (m_data == null) {
-			m_data = keyValuePairs;
-		} else if (m_data instanceof StringBuilder) {
-			((StringBuilder) m_data).append('&').append(keyValuePairs);
+		if (data == null) {
+			data = keyValuePairs;
+		} else if (data instanceof StringBuilder) {
+			((StringBuilder) data).append('&').append(keyValuePairs);
 		} else {
-			StringBuilder sb = new StringBuilder(m_data.length() + keyValuePairs.length() + 16);
+			StringBuilder sb = new StringBuilder(data.length() + keyValuePairs.length() + 16);
 
-			sb.append(m_data).append('&');
+			sb.append(data).append('&');
 			sb.append(keyValuePairs);
-			m_data = sb;
+			data = sb;
 		}
 	}
 
 	@Override
 	public void addData(String key, Object value) {
-		if (m_data instanceof StringBuilder) {
-			((StringBuilder) m_data).append('&').append(key).append('=').append(value);
+		if (data instanceof StringBuilder) {
+			((StringBuilder) data).append('&').append(key).append('=').append(value);
 		} else {
 			String str = String.valueOf(value);
-			int old = m_data == null ? 0 : m_data.length();
+			int old = data == null ? 0 : data.length();
 			StringBuilder sb = new StringBuilder(old + key.length() + str.length() + 16);
 
-			if (m_data != null) {
-				sb.append(m_data).append('&');
+			if (data != null) {
+				sb.append(data).append('&');
 			}
 
 			sb.append(key).append('=').append(str);
-			m_data = sb;
+			data = sb;
 		}
 	}
 
 	@Override
 	public CharSequence getData() {
-		if (m_data == null) {
+		if (data == null) {
 			return "";
 		} else {
-			return m_data;
+			return data;
 		}
 	}
 
 	@Override
 	public String getName() {
-		return m_name;
+		return name;
 	}
 
 	@Override
 	public String getStatus() {
-		return m_status;
+		return status;
 	}
 
 	@Override
 	public long getTimestamp() {
-		return m_timestampInMillis;
+		return timestampInMillis;
 	}
 
 	@Override
 	public String getType() {
-		return m_type;
+		return type;
 	}
 
 	@Override
 	public boolean isCompleted() {
-		return m_completed;
+		return completed;
 	}
 
 	@Override
 	public boolean isSuccess() {
-		return Message.SUCCESS.equals(m_status);
+		return Message.SUCCESS.equals(status);
 	}
 
 	public void setCompleted(boolean completed) {
-		m_completed = completed;
+		this.completed = completed;
 	}
 
 	public void setName(String name) {
-		m_name = name;
+		this.name = name;
 	}
 
 	@Override
 	public void setStatus(String status) {
-		m_status = status;
+		this.status = status;
 	}
 
 	@Override
 	public void setStatus(Throwable e) {
-		m_status = e.getClass().getName();
+		status = e.getClass().getName();
 	}
 
 	public void setTimestamp(long timestamp) {
-		m_timestampInMillis = timestamp;
+		timestampInMillis = timestamp;
 	}
 
 	public void setType(String type) {
-		m_type = type;
+		this.type = type;
 	}
 
 }

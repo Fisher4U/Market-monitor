@@ -11,13 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qinyadan.brick.monitor.config.ClientConfigManager;
+import com.qinyadan.brick.monitor.network.codec.CommandCodec;
 import com.qinyadan.brick.monitor.network.codec.MessageCodec;
+import com.qinyadan.brick.monitor.network.codec.NativeCommandCodec;
 import com.qinyadan.brick.monitor.network.codec.NativeMessageCodec;
+import com.qinyadan.brick.monitor.network.command.Command;
 import com.qinyadan.brick.monitor.spi.message.Message;
 import com.qinyadan.brick.monitor.spi.message.Transaction;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageQueue;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageStatistics;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageTree;
+import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultMessageQueue;
 import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultMessageTree;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultTransaction;
 import com.qinyadan.brick.monitor.utils.ServiceThread;
@@ -34,8 +38,12 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 	public static final String ID = "tcp-socket-sender";
 
 	public static final int SIZE = 5000;
+	
+	private static final int MAX_CHILD_NUMBER = 200;
 
 	private MessageCodec codec;
+	
+	private CommandCodec ccodec;
 
 	private MessageStatistics statistics;
 
@@ -54,8 +62,6 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 	private AtomicInteger errors = new AtomicInteger();
 
 	private AtomicInteger attempts = new AtomicInteger();
-
-	private static final int MAX_CHILD_NUMBER = 200;
 
 	private ExecutorService sendExecutor;
 
@@ -92,7 +98,10 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 				return new Thread(r, "TCPmergeExecutor_" + this.threadIndex.incrementAndGet());
 			}
 		});
+		
 		codec = new NativeMessageCodec();
+		ccodec= new NativeCommandCodec();
+		
 		sendExecutor.execute(this);
 		manageExecutor.execute(manager);
 		mergeExecutor.execute(new MergeAtomicTask());
@@ -225,21 +234,34 @@ public class TcpSocketSender extends ServiceThread implements MessageSender {
 			}
 		}
 	}
+	
+	public void sendInternal(Command cmd){
+		ChannelFuture future = manager.channel();
+		ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(10 * 1024); // 10K
+		buf.writeInt(0); // placeholder of length
 
+		ccodec.encode(cmd, buf);
+		
+		int size = buf.readableBytes();
+		buf.setInt(0, size - 4); // length
+		Channel channel = future.channel();
+		channel.writeAndFlush(buf);
+
+		if (statistics != null) {
+			statistics.onBytes(size);
+		}
+	}
+	
 	private void sendInternal(MessageTree tree) {
 		ChannelFuture future = manager.channel();
 		ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(10 * 1024); // 10K
-
 		buf.writeInt(0); // placeholder of length
 
 		codec.encode(tree, buf);
-
+		
 		int size = buf.readableBytes();
-
 		buf.setInt(0, size - 4); // length
-
 		Channel channel = future.channel();
-
 		channel.writeAndFlush(buf);
 
 		if (statistics != null) {

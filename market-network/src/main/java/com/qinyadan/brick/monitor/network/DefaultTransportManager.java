@@ -14,38 +14,33 @@ public class DefaultTransportManager implements TransportManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultTransportManager.class);
 
-	private ClientConfigManager configManager;
+	private TcpSocketSender tcpSocketSender = new TcpSocketSender();
 
-	private TcpSocketSender tcpSocketSender;
-
-	@Override
-	public MessageSender getSender() {
-		return tcpSocketSender;
-	}
-
-	public DefaultTransportManager() {
+	public DefaultTransportManager(ClientConfigManager configManager) {
 		List<Server> servers = configManager.getServers();
 		if (!configManager.isCatEnabled()) {
-			tcpSocketSender = null;
+			this.tcpSocketSender = null;
 			logger.warn("Market monitor was DISABLED due to not initialized yet!");
 		} else {
 			List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
-
 			for (Server server : servers) {
 				if (server.isEnabled()) {
 					addresses.add(new InetSocketAddress(server.getIp(), server.getPort()));
 				}
 			}
-
 			logger.info("Remote Market monitor servers: " + addresses);
-
 			if (addresses.isEmpty()) {
 				throw new RuntimeException("All servers in configuration are disabled!\r\n" + servers);
 			} else {
-				tcpSocketSender.setServerAddresses(addresses);
-				tcpSocketSender.initialize();
+				this.tcpSocketSender.setServerAddresses(addresses);
+				this.tcpSocketSender.initialize();
 			}
 		}
+	}
+
+	@Override
+	public MessageSender getSender() {
+		return tcpSocketSender;
 	}
 
 }
