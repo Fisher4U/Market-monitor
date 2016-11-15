@@ -1,4 +1,4 @@
-package com.qinyadan.brick.monitor.network.message;
+package com.qinyadan.brick.monitor.network;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
