@@ -3,6 +3,7 @@ package com.qinyadan.brick.monitor.network.message;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import com.qinyadan.brick.monitor.Monitor;
 import com.qinyadan.brick.monitor.spi.message.Event;
 import com.qinyadan.brick.monitor.spi.message.Heartbeat;
 import com.qinyadan.brick.monitor.spi.message.Message;
@@ -13,6 +14,7 @@ import com.qinyadan.brick.monitor.spi.message.Transaction;
 import com.qinyadan.brick.monitor.spi.message.ext.ForkedTransaction;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageTree;
 import com.qinyadan.brick.monitor.spi.message.ext.TaggedTransaction;
+import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultForkedTransaction;
 import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultTaggedTransaction;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultEvent;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultHeartbeat;
@@ -41,7 +43,7 @@ public class DefaultMessageProducer implements MessageFactory {
 
 	@Override
 	public void logError(String message, Throwable cause) {
-		if (Cat.getManager().isCatEnabled()) {
+		if (Monitor.getManager().isCatEnabled()) {
 			if (shouldLog(cause)) {
 				manager.getThreadLocalMessageTree().setSample(false);
 

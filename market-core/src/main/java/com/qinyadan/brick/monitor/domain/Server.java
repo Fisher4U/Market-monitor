@@ -9,6 +9,14 @@ public class Server {
 	private String httpPort;
 	
 	private boolean isEnabled;
+	
+	public Server(){
+		
+	}
+	
+	public Server(String ip){
+		this.ip = ip;
+	}
 
 	public String getIp() {
 		return ip;

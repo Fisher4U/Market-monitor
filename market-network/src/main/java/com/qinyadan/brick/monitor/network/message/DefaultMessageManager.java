@@ -12,6 +12,7 @@ import java.util.Stack;
 
 import org.slf4j.Logger;
 
+import com.qinyadan.brick.monitor.Monitor;
 import com.qinyadan.brick.monitor.config.ClientConfigManager;
 import com.qinyadan.brick.monitor.domain.Domain;
 import com.qinyadan.brick.monitor.network.MessageSender;
@@ -21,6 +22,7 @@ import com.qinyadan.brick.monitor.spi.message.Transaction;
 import com.qinyadan.brick.monitor.spi.message.ext.ForkedTransaction;
 import com.qinyadan.brick.monitor.spi.message.ext.MessageTree;
 import com.qinyadan.brick.monitor.spi.message.ext.TaggedTransaction;
+import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultForkedTransaction;
 import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultMessageTree;
 import com.qinyadan.brick.monitor.spi.message.ext.support.DefaultTaggedTransaction;
 import com.qinyadan.brick.monitor.spi.message.internal.DefaultEvent;
@@ -119,7 +121,7 @@ public class DefaultMessageManager  implements MessageManager {
 	}
 
 	private Context getContext() {
-		if (Cat.isInitialized()) {
+		if (Monitor.isInitialized()) {
 			Context ctx = m_context.get();
 
 			if (ctx != null) {
@@ -176,8 +178,7 @@ public class DefaultMessageManager  implements MessageManager {
 		return m_context.get() != null;
 	}
 
-	@Override
-	public void initialize() throws InitializationException {
+	public void initialize() {
 		m_domain = m_configManager.getDomain();
 		m_hostName = NetworkInterfaceManager.INSTANCE.getLocalHostName();
 
@@ -189,7 +190,7 @@ public class DefaultMessageManager  implements MessageManager {
 		try {
 			m_factory.initialize(new File("/data/appdatas/cat/"), m_domain.getId());
 		} catch (IOException e) {
-			throw new InitializationException("Error while initializing MessageIdFactory! " + e, e);
+			e.printStackTrace();
 		}
 
 		// initialize the tagged transaction cache

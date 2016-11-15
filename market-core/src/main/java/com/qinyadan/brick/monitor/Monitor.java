@@ -6,47 +6,37 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.unidal.helper.Files;
-import org.unidal.helper.Properties;
-import org.unidal.initialization.DefaultModuleContext;
-import org.unidal.initialization.Module;
-import org.unidal.initialization.ModuleContext;
-import org.unidal.initialization.ModuleInitializer;
-import org.unidal.lookup.ContainerLoader;
+import com.qinyadan.brick.monitor.domain.ClientConfig;
+import com.qinyadan.brick.monitor.domain.Server;
+import com.qinyadan.brick.monitor.spi.message.Event;
+import com.qinyadan.brick.monitor.spi.message.Heartbeat;
+import com.qinyadan.brick.monitor.spi.message.MessageFactory;
+import com.qinyadan.brick.monitor.spi.message.Trace;
+import com.qinyadan.brick.monitor.spi.message.Transaction;
+import com.qinyadan.brick.monitor.spi.message.ext.ForkedTransaction;
+import com.qinyadan.brick.monitor.spi.message.ext.MessageTree;
+import com.qinyadan.brick.monitor.spi.message.ext.TaggedTransaction;
+import com.qinyadan.brick.monitor.spi.message.internal.MessageManager;
 
-import com.dianping.cat.configuration.client.entity.ClientConfig;
-import com.dianping.cat.configuration.client.entity.Server;
-import com.dianping.cat.message.Event;
-import com.dianping.cat.message.ForkedTransaction;
-import com.dianping.cat.message.Heartbeat;
-import com.dianping.cat.message.MessageProducer;
-import com.dianping.cat.message.TaggedTransaction;
-import com.dianping.cat.message.Trace;
-import com.dianping.cat.message.Transaction;
-import com.dianping.cat.message.spi.MessageManager;
-import com.dianping.cat.message.spi.MessageTree;
+
 
 /**
  * This is the main entry point to the system.
  */
 public class Monitor {
+	
 	private static Monitor s_instance = new Monitor();
 
 	private static volatile boolean s_init = false;
 
-	private MessageProducer m_producer;
+	private MessageFactory m_producer;
 
 	private MessageManager m_manager;
-
-	private PlexusContainer m_container;
 
 	private static void checkAndInitialize() {
 		if (!s_init) {
 			synchronized (s_instance) {
 				if (!s_init) {
-					initialize(new File(getCatHome(), "client.xml"));
 					log("WARN", "Cat is lazy initialized!");
 					s_init = true;
 				}
@@ -59,14 +49,7 @@ public class Monitor {
 	}
 
 	public static void destroy() {
-		s_instance.m_container.dispose();
 		s_instance = new Monitor();
-	}
-
-	public static String getCatHome() {
-		String catHome = Properties.forString().fromEnv().fromSystem().getProperty("CAT_HOME", "/data/appdatas/cat");
-
-		return catHome;
 	}
 
 	public static String getCurrentMessageId() {
@@ -95,47 +78,22 @@ public class Monitor {
 		return s_instance.m_manager;
 	}
 
-	public static MessageProducer getProducer() {
+	public static MessageFactory getProducer() {
 		checkAndInitialize();
-
 		return s_instance.m_producer;
 	}
 
-	// this should be called during application initialization time
-	public static void initialize(File configFile) {
-		PlexusContainer container = ContainerLoader.getDefaultContainer();
-
-		initialize(container, configFile);
-	}
-
-	public static void initialize(PlexusContainer container, File configFile) {
-		ModuleContext ctx = new DefaultModuleContext(container);
-		Module module = ctx.lookup(Module.class, CatClientModule.ID);
-
-		if (!module.isInitialized()) {
-			ModuleInitializer initializer = ctx.lookup(ModuleInitializer.class);
-
-			ctx.setAttribute("cat-client-config-file", configFile);
-			initializer.execute(ctx, module);
-		}
-	}
-
 	public static void initialize(String... servers) {
-		File configFile = null;
-
 		try {
-			configFile = File.createTempFile("cat-client", ".xml");
+			File configFile = File.createTempFile("cat-client", ".xml");
 			ClientConfig config = new ClientConfig().setMode("client");
-
 			for (String server : servers) {
 				config.addServer(new Server(server));
 			}
 
-			Files.forIO().writeTo(configFile, config.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		initialize(configFile);
 	}
 
 	public static boolean isInitialized() {
@@ -282,14 +240,6 @@ public class Monitor {
 		Monitor.getProducer().logTrace(type, name, status, nameValuePairs);
 	}
 
-	public static <T> T lookup(Class<T> role) throws ComponentLookupException {
-		return lookup(role, null);
-	}
-
-	public static <T> T lookup(Class<T> role, String hint) throws ComponentLookupException {
-		return s_instance.m_container.lookup(role, hint);
-	}
-
 	public static Event newEvent(String type, String name) {
 		return Monitor.getProducer().newEvent(type, name);
 	}
@@ -325,17 +275,6 @@ public class Monitor {
 	}
 
 	private Monitor() {
-	}
-
-	void setContainer(PlexusContainer container) {
-		try {
-			m_container = container;
-			m_manager = container.lookup(MessageManager.class);
-			m_producer = container.lookup(MessageProducer.class);
-		} catch (ComponentLookupException e) {
-			throw new RuntimeException("Unable to get instance of MessageManager, "
-			      + "please make sure the environment was setup correctly!", e);
-		}
 	}
 
 	public static interface Context {
