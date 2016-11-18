@@ -2,7 +2,8 @@ package com.qinyadan.brick.monitor.agent.stats;
 
 import java.util.List;
 
-import org.apache.kafka.common.MetricName;
+import com.qinyadan.brick.monitor.agent.metric.MetricName;
+
 
 public interface StatsEngine {
 

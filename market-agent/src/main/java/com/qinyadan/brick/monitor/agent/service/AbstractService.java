@@ -1,14 +1,8 @@
 package com.qinyadan.brick.monitor.agent.service;
 
-import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public abstract class AbstractService implements Service {
-
-	private static final Logger logger = LoggerFactory.getLogger(AbstractService.class);
 
 	private final String name;
 
@@ -41,7 +35,6 @@ public abstract class AbstractService implements Service {
 
 	public final void start() throws Exception {
 		if (this.state.beginStart()) {
-			logger.info(MessageFormat.format("Starting service {0}", new Object[] { this.name }));
 			doStart();
 			this.state.endStart();
 		}
@@ -51,7 +44,6 @@ public abstract class AbstractService implements Service {
 
 	public final void stop() throws Exception {
 		if (this.state.beginStop()) {
-			logger.info(MessageFormat.format("Stopping service {0}", new Object[] { this.name }));
 			doStop();
 			this.state.endStop();
 		}
