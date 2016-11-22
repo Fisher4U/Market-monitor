@@ -1,20 +1,20 @@
 package com.qinyadan.brick.monitor.agent.service;
 
 public interface Service {
-	
-	public abstract String getName();
 
-	public abstract void start() throws Exception;
+	public String getName();
 
-	public abstract void stop() throws Exception;
+	public void start() throws Exception;
 
-	public abstract boolean isEnabled();
+	public void stop() throws Exception;
 
-	public abstract boolean isStarted();
+	public boolean isEnabled();
 
-	public abstract boolean isStopped();
+	public boolean isStarted();
 
-	public abstract boolean isStartedOrStarting();
+	public boolean isStopped();
 
-	public abstract boolean isStoppedOrStopping();
+	public boolean isStartedOrStarting();
+
+	public boolean isStoppedOrStopping();
 }

@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class AbstractService implements Service {
 
 	private final String name;
-
 	private final State state = new State();
 
 	protected AbstractService(String name) {
@@ -40,8 +39,6 @@ public abstract class AbstractService implements Service {
 		}
 	}
 
-	protected abstract void doStart() throws Exception;
-
 	public final void stop() throws Exception {
 		if (this.state.beginStop()) {
 			doStop();
@@ -49,12 +46,13 @@ public abstract class AbstractService implements Service {
 		}
 	}
 
+	protected abstract void doStart() throws Exception;
+
 	protected abstract void doStop() throws Exception;
 
 	private static final class State {
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		private AtomicReference<ServiceState> serviceState = new AtomicReference(ServiceState.STOPPED);
+		private AtomicReference<ServiceState> serviceState = new AtomicReference<>(ServiceState.STOPPED);
 
 		private boolean beginStart() {
 			return this.serviceState.compareAndSet(ServiceState.STOPPED, ServiceState.STARTING);

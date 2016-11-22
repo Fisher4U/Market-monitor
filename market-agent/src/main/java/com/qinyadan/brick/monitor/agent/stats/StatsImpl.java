@@ -2,6 +2,11 @@ package com.qinyadan.brick.monitor.agent.stats;
 
 public class StatsImpl extends AbstractStats implements Stats {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private float total;
 	private float minValue;
 	private float maxValue;

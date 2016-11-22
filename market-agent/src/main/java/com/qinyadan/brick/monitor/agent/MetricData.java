@@ -5,12 +5,11 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
 import com.qinyadan.brick.monitor.agent.metric.MetricName;
 import com.qinyadan.brick.monitor.agent.stats.StatsBase;
 
 public class MetricData {
-	
+
 	private final MetricName metricName;
 	private final Integer metricId;
 	private final StatsBase stats;
@@ -42,14 +41,13 @@ public class MetricData {
 	}
 
 	public void writeJSONString(Writer writer) throws IOException {
-		List<Object> result = new ArrayList(2);
+		List<Object> result = new ArrayList<>(2);
 		if (this.metricId == null) {
 			result.add(this.metricName);
 		} else {
 			result.add(this.metricId);
 		}
 		result.add(this.stats);
-		JSONArray.toJSONString(result);
 	}
 
 	public static MetricData create(MetricName metricName, StatsBase stats) {

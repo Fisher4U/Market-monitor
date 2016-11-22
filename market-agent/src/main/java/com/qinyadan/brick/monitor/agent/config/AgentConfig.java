@@ -3,7 +3,7 @@ package com.qinyadan.brick.monitor.agent.config;
 import java.util.List;
 import java.util.Set;
 
-public interface AgentConfig {
+public interface AgentConfig extends Config{
 
 	public abstract boolean isAgentEnabled();
 

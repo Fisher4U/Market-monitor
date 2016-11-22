@@ -5,16 +5,17 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.qinyadan.brick.monitor.agent.MonitorHook;
+import com.qinyadan.brick.monitor.agent.GatherListener;
 import com.qinyadan.brick.monitor.agent.service.AbstractService;
+import com.qinyadan.brick.monitor.agent.service.ServiceFactory;
 import com.qinyadan.brick.monitor.agent.stats.StatsEngine;
 
-public class GCService extends AbstractService implements MonitorHook {
+public class GCService extends AbstractService implements GatherListener {
 
 	private final Map<String, GarbageCollector> garbageCollectors = new HashMap();
 
-	protected GCService(String name) {
-		super(name);
+	public GCService() {
+		super(GCService.class.getSimpleName());
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class GCService extends AbstractService implements MonitorHook {
 
 	@Override
 	protected void doStart() throws Exception {
-
+		ServiceFactory.getHarvestService().addHarvestListener(this);
 	}
 
 	@Override
@@ -71,6 +72,7 @@ public class GCService extends AbstractService implements MonitorHook {
 			long time = this.collectionTime - lastCollectionTime;
 			if (numberOfCollections > 0L) {
 				String rootMetricName = "GC/" + gcBean.getName();
+				System.out.println(rootMetricName);
 				// ResponseTimeStats stats =
 				// statsEngine.getResponseTimeStats(rootMetricName);
 				//stats.recordResponseTime(time, TimeUnit.MILLISECONDS);

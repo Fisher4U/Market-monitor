@@ -5,23 +5,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.text.MessageFormat;
 
 public class BootstrapAgent {
 
-	private static final String MONITOR_JAR_FILE = "E:\\newrelic\\agent.jar";
+	private static final String MONITOR_JAR_FILE = "E:\\newrelic\\agent-jar-with-dependencies.jar";
 
 	public static void main(String[] args) {
 	}
 
 	public static void premain(String agentArgs, Instrumentation inst) {
 		String javaVersion = System.getProperty("java.version", "");
-		String msg = MessageFormat.format(
-				"Java version is: {0}.  This version of the Monitor Agent  support Java 8. Please use an earlier version of Java.",
-				new Object[] { javaVersion });
-
-		System.out.println(msg);
-
+		System.out.println("java version ==" + javaVersion);
 		try {
 			startAgent(agentArgs, inst);
 		} catch (Exception e) {
@@ -35,9 +29,8 @@ public class BootstrapAgent {
 		BootstrapLoader.load(inst, MONITOR_JAR_FILE);
 
 		URL[] codeSource = { BootstrapAgent.class.getProtectionDomain().getCodeSource().getLocation() };
-		
+
 		ClassLoader classLoader = new JVMAgentClassLoader(codeSource, null);
-		System.out.println(classLoader);
 		Class<?> agentClass = classLoader.loadClass("com.qinyadan.brick.monitor.agent.Agent");
 		Method premain = agentClass.getDeclaredMethod("premain",
 				new Class[] { String.class, Instrumentation.class, Long.TYPE });

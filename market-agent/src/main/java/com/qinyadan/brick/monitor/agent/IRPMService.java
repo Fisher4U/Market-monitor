@@ -8,20 +8,20 @@ import com.qinyadan.brick.monitor.agent.stats.StatsEngine;
 
 public interface IRPMService extends Service {
 
-	public abstract Map<String, Object> launch() throws Exception;
+	public Map<String, Object> launch() throws Exception;
 
-	public abstract String getHostString();
+	public String getHostString();
 
-	public abstract void harvest(StatsEngine paramStatsEngine) throws Exception;
+	public void harvest(StatsEngine paramStatsEngine) throws Exception;
 
-	public abstract List<List<?>> getAgentCommands() throws Exception;
+	public List<List<?>> getAgentCommands() throws Exception;
 
-	public abstract void sendCommandResults(Map<Long, Object> paramMap) throws Exception;
+	public void sendCommandResults(Map<Long, Object> paramMap) throws Exception;
 
-	public abstract String getApplicationName();
+	public String getApplicationName();
 
-	public abstract boolean isMainApp();
+	public boolean isMainApp();
 
-	public abstract long getConnectionTimestamp();
+	public long getConnectionTimestamp();
 
 }

@@ -4,11 +4,11 @@ import com.qinyadan.brick.monitor.agent.service.Service;
 
 public interface HarvestService extends Service {
 	
-	public abstract void startHarvest(IRPMService paramIRPMService);
+	public void startHarvest(IRPMService iRPMService);
 
-	public abstract void addHarvestListener(MonitorHook paramHarvestListener);
+	public void addHarvestListener(GatherListener gatherListener);
 
-	public abstract void removeHarvestListener(MonitorHook paramHarvestListener);
+	public void removeHarvestListener(GatherListener gatherListener);
 
-	public abstract void harvestNow();
+	public void harvestNow();
 }

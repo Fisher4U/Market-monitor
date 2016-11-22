@@ -16,7 +16,7 @@ import com.qinyadan.brick.monitor.agent.utils.Streams;
 import com.qinyadan.brick.monitor.agent.utils.Utils;
 
 public class InstrumentationProxy extends InstrumentationWrapper {
-	
+
 	private final boolean bootstrapClassIntrumentationEnabled;
 
 	protected InstrumentationProxy(Instrumentation instrumentation,
@@ -51,12 +51,10 @@ public class InstrumentationProxy extends InstrumentationWrapper {
 		if (!isRetransformClassesSupported()) {
 			return new Class[0];
 		}
-		List<Class<?>> classList = new ArrayList(classNames.length);
+		List<Class<?>> classList = new ArrayList<>(classNames.length);
 		for (String className : classNames) {
 			Class<?> clazz = Class.forName(className);
-			/*if (!PointCutClassTransformer.isInstrumented(clazz)) {
-				classList.add(clazz);
-			}*/
+			classList.add(clazz);
 		}
 		Object classArray = (Class[]) classList.toArray(new Class[0]);
 		if (!classList.isEmpty()) {
@@ -92,10 +90,12 @@ public class InstrumentationProxy extends InstrumentationWrapper {
 
 					toRedefine.add(new ClassDefinition(clazz, classfileBuffer));
 				} catch (Exception e) {
-					//Agent.LOG.finer("Unable to redefine " + clazz.getName() + " - " + e.toString());
+					// Agent.LOG.finer("Unable to redefine " + clazz.getName() +
+					// " - " + e.toString());
 				}
 			} else {
-				//Agent.LOG.finer("Unable to find resource to redefine " + clazz.getName());
+				// Agent.LOG.finer("Unable to find resource to redefine " +
+				// clazz.getName());
 			}
 		}
 		if (!toRedefine.isEmpty()) {

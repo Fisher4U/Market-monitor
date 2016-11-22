@@ -4,22 +4,25 @@ import java.util.List;
 
 import com.qinyadan.brick.monitor.agent.metric.MetricName;
 
-
 public interface StatsEngine {
 
-	public abstract Stats getStats(String paramString);
+	public Stats getStats(String paramString);
 
-	public abstract Stats getStats(MetricName paramMetricName);
+	public Stats getStats(MetricName paramMetricName);
 
-	public abstract void recordEmptyStats(String paramString);
+	public void recordEmptyStats(String paramString);
 
-	public abstract void recordEmptyStats(MetricName paramMetricName);
+	public void recordEmptyStats(MetricName paramMetricName);
 
-	public abstract List<MetricName> getMetricNames();
+	public List<MetricName> getMetricNames();
 
-	public abstract void clear();
+	public void clear();
 
-	public abstract void mergeStats(StatsEngine paramStatsEngine);
+	public void mergeStats(StatsEngine paramStatsEngine);
 
-	public abstract int getSize();
+	public int getSize();
+
+	public ResponseTimeStats getResponseTimeStats(String paramString);
+
+	public ResponseTimeStats getResponseTimeStats(MetricName paramMetricName);
 }

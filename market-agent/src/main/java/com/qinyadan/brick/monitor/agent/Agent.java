@@ -29,9 +29,9 @@ public class Agent extends AbstractService implements IAgent {
 	}
 
 	protected void doStart() {
+		
 		ConfigService configService = ServiceFactory.getConfigService();
 		AgentConfig config = configService.getDefaultAgentConfig();
-
 		logHostIp();
 		System.out.println(MessageFormat.format("Monitor Agent v{0} is initializing...", new Object[] { getVersion() }));
 
@@ -145,14 +145,8 @@ public class Agent extends AbstractService implements IAgent {
 		try {
 			try {
 				IAgent agent = new Agent(inst);
-				System.out.println(agent);
 				ServiceManager serviceManager = new ServiceManagerImpl(agent);
-				System.out.println(serviceManager);
 				ServiceFactory.setServiceManager(serviceManager);
-				/*if (!serviceManager.getConfigService().getDefaultAgentConfig().isAgentEnabled()) {
-					System.out.println("agent_enabled is false in the config. Not starting New Relic Agent.");
-					return;
-				}*/
 				serviceManager.start();
 			} catch (Throwable t) {
 				System.out.println(

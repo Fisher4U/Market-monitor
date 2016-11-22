@@ -16,7 +16,6 @@ import com.qinyadan.brick.monitor.agent.metric.MetricName;
 
 public class StatsEngineImpl implements StatsEngine {
 
-	private static final Logger logger = LoggerFactory.getLogger(StatsEngineImpl.class);
 
 	private static final float HASH_SET_LOAD_FACTOR = 0.75F;
 	public static final int DEFAULT_CAPACITY = 140;
@@ -31,7 +30,7 @@ public class StatsEngineImpl implements StatsEngine {
 
 	public StatsEngineImpl(int capacity) {
 		this.unscopedStats = new SimpleStatsEngine(capacity);
-		this.scopedStats = new HashMap(capacity);
+		this.scopedStats = new HashMap<>(capacity);
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class StatsEngineImpl implements StatsEngine {
 
 	@Override
 	public List<MetricName> getMetricNames() {
-		List<MetricName> result = new ArrayList(getSize());
+		List<MetricName> result = new ArrayList<>(getSize());
 		for (String name : this.unscopedStats.getStatsMap().keySet()) {
 			result.add(MetricName.create(name));
 		}
@@ -158,7 +157,7 @@ public class StatsEngineImpl implements StatsEngine {
 	}
 
 	public List<MetricData> getMetricData(Normalizer metricNormalizer, MetricIdRegistry metricIdRegistry) {
-		List<MetricData> result = new ArrayList(
+		List<MetricData> result = new ArrayList<>(
 				this.unscopedStats.getStatsMap().size() + this.scopedStats.size() * 32 * 2);
 		for (Map.Entry<String, SimpleStatsEngine> entry : this.scopedStats.entrySet()) {
 			result.addAll(((SimpleStatsEngine) entry.getValue()).getMetricData(metricNormalizer, metricIdRegistry,
@@ -174,8 +173,8 @@ public class StatsEngineImpl implements StatsEngine {
 	public static List<MetricData> createUnscopedCopies(Normalizer metricNormalizer, MetricIdRegistry metricIdRegistry,
 			List<MetricData> scopedMetrics) {
 		int size = (int) (scopedMetrics.size() / 0.75D) + 2;
-		Map<String, MetricData> allUnscopedMetrics = new HashMap(size);
-		List<MetricData> results = new ArrayList(scopedMetrics.size());
+		Map<String, MetricData> allUnscopedMetrics = new HashMap<>(size);
+		List<MetricData> results = new ArrayList<>(scopedMetrics.size());
 		for (MetricData scoped : scopedMetrics) {
 			String theMetricName = scoped.getMetricName().getName();
 			MetricData unscopedMetric = getUnscopedCloneOfData(metricNormalizer, metricIdRegistry, theMetricName,
@@ -201,8 +200,6 @@ public class StatsEngineImpl implements StatsEngine {
 				return SimpleStatsEngine.createMetricData(metricNameUnscoped, (StatsBase) stats.clone(),
 						metricNormalizer, metricIdRegistry);
 			} catch (CloneNotSupportedException e) {
-				logger.error("Unscoped metric not created because stats base could not be cloned for "
-						+ metricNameUnscoped.getName());
 				return null;
 			}
 		}
@@ -213,8 +210,8 @@ public class StatsEngineImpl implements StatsEngine {
 		if (metricIdRegistry.getSize() == 0) {
 			return result;
 		}
-		int hashMapSize = (int) (result.size() / 0.75F) + 1;
-		HashMap<Object, MetricData> data = new HashMap(hashMapSize);
+		int hashMapSize = (int) (result.size() / HASH_SET_LOAD_FACTOR) + 1;
+		HashMap<Object, MetricData> data = new HashMap<>(hashMapSize);
 		for (MetricData md : result) {
 			MetricData existing = (MetricData) data.get(md.getKey());
 			if (existing == null) {
@@ -226,7 +223,7 @@ public class StatsEngineImpl implements StatsEngine {
 		if (data.size() == result.size()) {
 			return result;
 		}
-		return new ArrayList(data.values());
+		return new ArrayList<>(data.values());
 	}
 
 }
