@@ -12,6 +12,8 @@
   	<module>market-agent</module>
   	<module>market-network</module>
   	<module>market-core</module>
+  	<module>market-plugins</module>
+  	<module>market-server</module>
   </modules>
   
   

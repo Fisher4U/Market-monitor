@@ -10,19 +10,14 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.34.Final</version>
+		</dependency>
+		<dependency>
 			<groupId>com.qinyadan.market</groupId>
 			<artifactId>market-core</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>4.0.24.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
 		</dependency>
 	</dependencies>
 </project>
