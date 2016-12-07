@@ -72,11 +72,11 @@ public class MonitorServerBootstrap implements MonitorServerConfig {
 
 	private final DefaultMonitorServer monitorServer;
 
-	public MonitorServerBootstrap() throws InterruptedException {
-		this(ClusterOption.DISABLE_CLUSTER_OPTION);
+	public MonitorServerBootstrap(ServerMessageListener messageListener) throws InterruptedException {
+		this(ClusterOption.DISABLE_CLUSTER_OPTION,messageListener);
 	}
 
-	public MonitorServerBootstrap(ClusterOption clusterOption) throws InterruptedException {
+	public MonitorServerBootstrap(ClusterOption clusterOption,ServerMessageListener messageListener) throws InterruptedException {
 
 		bossGroup = new NioEventLoopGroup(1,new ThreadFactory() {
             private AtomicInteger threadIndex = new AtomicInteger(0);
@@ -99,6 +99,8 @@ public class MonitorServerBootstrap implements MonitorServerConfig {
 		this.requestManagerTimer = TimerFactory.createHashedWheelTimer("ServerSocket-RequestManager", 50,
 				TimeUnit.MILLISECONDS, 512);
 		this.clusterOption = clusterOption;
+		this.messageListener = messageListener;
+		
 		this.monitorServer = new DefaultMonitorServer(this);
 		
 		ServerBootstrap bootstrap = new ServerBootstrap().group(bossGroup, workerGroup)

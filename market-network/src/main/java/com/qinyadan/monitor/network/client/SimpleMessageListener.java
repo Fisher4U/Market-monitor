@@ -1,10 +1,15 @@
 package com.qinyadan.monitor.network.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qinyadan.monitor.network.MessageListener;
 import com.qinyadan.monitor.network.DuplexSocket;
+import com.qinyadan.monitor.network.MessageListener;
 import com.qinyadan.monitor.network.packet.RequestPacket;
 import com.qinyadan.monitor.network.packet.SendPacket;
 
@@ -27,7 +32,7 @@ public class SimpleMessageListener implements MessageListener {
 
     @Override
     public void handleSend(SendPacket sendPacket, DuplexSocket duplexSocket) {
-        logger.info("handleSend packet:{}, remote:{},message:{}", sendPacket, duplexSocket.getRemoteAddress(),new String(sendPacket.getPayload()));
+        logger.info("handleSend packet:{}, remote:{},message:{}", sendPacket, duplexSocket.getRemoteAddress(),getSerializedBytes(sendPacket.getPayload()));
     }
 
     @Override
@@ -40,5 +45,20 @@ public class SimpleMessageListener implements MessageListener {
             duplexSocket.response(requestPacket, new byte[0]);
         }
     }
-
+    
+    private static Map getSerializedBytes(byte[] bytes)  {
+		if (null == bytes )
+			return null;
+		try {
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
+		    ObjectInputStream in = new ObjectInputStream(byteIn);
+		    Map<Integer, String> data2 = (Map<Integer, String>) in.readObject();
+		    return data2;
+		} catch (IOException e) {
+			return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

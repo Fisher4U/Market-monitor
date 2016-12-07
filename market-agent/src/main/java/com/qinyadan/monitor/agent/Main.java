@@ -2,7 +2,6 @@ package com.qinyadan.monitor.agent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -14,9 +13,7 @@ import com.qinyadan.monitor.utils.ConfigUtils;
 
 
 /**
- * Main. (API, Static, ThreadSafe)
  * 
- * @author william.liangf
  */
 public class Main {
 

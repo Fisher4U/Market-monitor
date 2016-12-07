@@ -10,9 +10,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>4.0.24.Final</version>
+			<groupId>com.qinyadan.market</groupId>
+			<artifactId>market-network</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 	</dependencies>
 </project>

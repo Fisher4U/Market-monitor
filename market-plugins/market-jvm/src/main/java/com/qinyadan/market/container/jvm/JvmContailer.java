@@ -7,8 +7,8 @@ public class JvmContailer implements Container{
 
 	@Override
 	public void start() {
-		GCService gcService = ExtensionLoader.getExtensionLoader(GCService.class).getExtension("cm1");
-		gcService.collect();
+		JVMService service = ExtensionLoader.getExtensionLoader(JVMService.class).getExtension("MeticJvm");
+		service.collect();
 	}
 
 	@Override

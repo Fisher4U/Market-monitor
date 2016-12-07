@@ -18,7 +18,7 @@ import com.qinyadan.monitor.network.api.DataSender;
 import com.qinyadan.monitor.network.api.support.NettyDataSender;
 import com.qinyadan.monitor.network.packet.Packet;
 
-public abstract class AbstractService implements GCService {
+public abstract class AbstractService implements JVMService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractService.class);
 
