@@ -1,2 +1,0 @@
-adaptive=com.qinyadan.monitor.extension.factory.AdaptiveExtensionFactory
-spi=com.qinyadan.monitor.extension.factory.SpiExtensionFactory

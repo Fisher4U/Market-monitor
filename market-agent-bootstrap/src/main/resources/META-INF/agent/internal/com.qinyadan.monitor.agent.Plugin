@@ -1,0 +1,2 @@
+paas=com.qinyadan.market.container.paas.support.MetricPaasService
+tomcat=com.qinyadan.market.plugins.tomcat78.TomcatPluginService

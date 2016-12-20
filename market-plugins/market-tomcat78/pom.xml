@@ -16,14 +16,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qinyadan.market</groupId>
-			<artifactId>market-core</artifactId>
+			<artifactId>market-network</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-core</artifactId>
-			<version>${tomcat.version}</version>
-			<scope>provided</scope>
+			<groupId>com.qinyadan.market</groupId>
+			<artifactId>market-agent</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

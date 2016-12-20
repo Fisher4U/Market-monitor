@@ -1,10 +1,7 @@
 package com.qinyadan.monitor.agent.plugin.container;
 
-import java.util.Set;
-
 import com.qinyadan.monitor.agent.Container;
-import com.qinyadan.monitor.agent.Plugin;
-import com.qinyadan.monitor.extension.ExtensionLoader;
+import com.qinyadan.monitor.agent.PluginsManager;
 
 public class PluginContainer implements Container{
 	
@@ -15,8 +12,7 @@ public class PluginContainer implements Container{
 	 */
 	@Override
 	public void start() {
-		Set<String> pluginsnames = ExtensionLoader.getExtensionLoader(Plugin.class).getLoadedExtensions();
-		System.out.println(pluginsnames);
+		PluginsManager.loadPlugins();
 	}
 
 	@Override
