@@ -1,0 +1,3 @@
+adaptive=om.qinyadan.monitor.extension.compiler.support.AdaptiveCompiler
+jdk=om.qinyadan.monitor.extension.compiler.support.JdkCompiler
+javassist=om.qinyadan.monitor.extension.compiler.support.JavassistCompiler

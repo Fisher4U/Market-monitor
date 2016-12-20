@@ -7,7 +7,7 @@ import com.qinyadan.monitor.extension.SPI;
  * 
  * @author william.liangf
  */
-@SPI("spring")
+@SPI("plugin")
 public interface Container {
     
     /**
