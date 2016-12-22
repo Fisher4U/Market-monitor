@@ -16,6 +16,7 @@
 		<module>market-plugins</module>
 		<module>market-server</module>
 		<module>market-agent-bootstrap</module>
+		<module>market-monitor-admin</module>
 	</modules>
 
 	<build>
