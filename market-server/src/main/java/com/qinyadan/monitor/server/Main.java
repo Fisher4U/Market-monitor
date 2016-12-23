@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.qinyadan.monitor.network.DuplexSocket;
 import com.qinyadan.monitor.network.packet.PingPacket;
 import com.qinyadan.monitor.network.packet.RequestPacket;
@@ -13,12 +14,15 @@ import com.qinyadan.monitor.network.packet.SendPacket;
 import com.qinyadan.monitor.network.server.MonitorServer;
 import com.qinyadan.monitor.network.server.MonitorServerBootstrap;
 import com.qinyadan.monitor.network.server.ServerMessageListener;
-import com.qinyadan.monitor.server.support.EsStorage;
+import com.qinyadan.monitor.server.storage.Storage;
+import com.qinyadan.monitor.server.storage.support.ElasticsearchStorage;
+import com.qinyadan.monitor.server.tracer.TracerConsumer;
+import com.qinyadan.monitor.server.tracer.support.RocketMQTracerConsumer;
 
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException, UnknownHostException, IOException {
-		Storage storage = new EsStorage("127.0.0.1",9300);
+		Storage storage = new ElasticsearchStorage("127.0.0.1",9300);
 		MonitorServerBootstrap serverAcceptor = new MonitorServerBootstrap(new ServerMessageListener() {
 			@Override
 			public void handleSend(SendPacket sendPacket, DuplexSocket duplexSocket) {
@@ -33,9 +37,18 @@ public class Main {
 			public void handlePing(PingPacket pingPacket, MonitorServer monitorServer) {
 			}
 		});
-
+		TracerConsumer comsumer;
+		try {
+			comsumer = new RocketMQTracerConsumer();
+			comsumer.consumer();
+		} catch (MQClientException e) {
+			e.printStackTrace();
+		}
 		serverAcceptor.bind("127.0.0.1", 8889);
-
+		
+		
+		
+		
 		Thread.sleep(1000);
 	}
 	

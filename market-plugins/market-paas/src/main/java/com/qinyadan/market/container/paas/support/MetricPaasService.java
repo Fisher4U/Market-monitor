@@ -3,7 +3,9 @@ package com.qinyadan.market.container.paas.support;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
-import com.qinyadan.market.container.paas.AbstractService;
+import com.qinyadan.monitor.agent.AbstractService;
 import com.qinyadan.monitor.network.packet.Packet;
 import com.qinyadan.monitor.network.packet.SendPacket;
 
@@ -41,15 +43,19 @@ public class MetricPaasService extends AbstractService {
 	}
 
 	@Override
-	protected Packet doCollect() {
+	protected List<Packet> doCollect() {
 		Set<String> keys = metrics.getMetrics().keySet();
 		Map r = new HashMap<>();
 		for (String key : keys) {
 			final Gauge gauge = (Gauge) metrics.getMetrics().get(key);
 			r.put(key, gauge.getValue());
 		}
+		List<Packet> cps = new ArrayList<>();
+		r.put("index_name", "application");
+		r.put("type_name", "paas");
 		SendPacket cp = new SendPacket(getSerializedBytes(r));
-		return cp;
+		cps.add(cp);
+		return cps;
 
 	}
 
